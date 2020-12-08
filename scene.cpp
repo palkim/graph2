@@ -71,8 +71,7 @@ namespace fst
                     vertex_data[face.v1_id - 1] - vertex_data[face.v0_id - 1],
                     vertex_data[face.v2_id - 1] - vertex_data[face.v0_id - 1]));
             }
-
-            meshes.push_back(Mesh(std::move(triangles), mesh.material_id));
+            meshes.push_back(Mesh(std::move(triangles), mesh.material_id, mesh.transformations, mesh.texture_id));
         }
 
         for (auto& triangle : parser.triangles)
@@ -84,7 +83,7 @@ namespace fst
                 vertex_data[triangle.indices.v1_id - 1] - vertex_data[triangle.indices.v0_id - 1],
                 vertex_data[triangle.indices.v2_id - 1] - vertex_data[triangle.indices.v0_id - 1]));
 
-            meshes.push_back(Mesh(std::move(triangles), triangle.material_id));
+            meshes.push_back(Mesh(std::move(triangles), triangle.material_id, triangle.transformations, triangle.texture_id));
         }
 
         for (auto& sphere : parser.spheres)

@@ -5,14 +5,18 @@
 
 namespace fst
 {
-    Mesh::Mesh(const std::vector<Triangle>& triangles, int material_id)
+    Mesh::Mesh(const std::vector<Triangle>& triangles, int material_id, std::string transformations, int texture_id)
 	: m_triangles(triangles)
         , m_material_id(material_id)
+        , m_transformations(transformations)
+        , m_texture_id(texture_id)
     {}
 
-    Mesh::Mesh(std::vector<Triangle>&& triangles, int material_id)
+    Mesh::Mesh(std::vector<Triangle>&& triangles, int material_id, std::string transformations, int texture_id)
 	: m_triangles(std::move(triangles))
         , m_material_id(material_id)
+        , m_transformations(transformations)
+        , m_texture_id(texture_id)
     {}
 
     bool Mesh::intersect(const Ray& ray, HitRecord& hit_record, float max_distance) const
