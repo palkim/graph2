@@ -89,7 +89,7 @@ namespace fst
         for (auto& sphere : parser.spheres)
         {
             spheres.push_back(Sphere(vertex_data[sphere.center_vertex_id - 1],
-                sphere.radius, sphere.material_id));
+                sphere.radius, sphere.material_id, sphere.transformations, sphere.texture_id));
         }
 
         background_color = math::Vector3f(parser.background_color.x, parser.background_color.y, parser.background_color.z);

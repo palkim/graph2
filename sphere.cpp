@@ -4,10 +4,12 @@
 
 namespace fst
 {
-    Sphere::Sphere(const math::Vector3f& center, float radius, int material_id)
+    Sphere::Sphere(const math::Vector3f& center, float radius, int material_id, std::string transformations, int texture_id)
         : m_center(center)
         , m_radius(radius)
         , m_material_id(material_id)
+        , m_transformations(transformations)
+        , m_texture_id(texture_id)
     {}
 
     bool Sphere::intersect(const Ray& ray, HitRecord& hit_record, float max_distance) const
