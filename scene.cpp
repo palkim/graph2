@@ -1,4 +1,5 @@
 #include "scene.h"
+#include <iostream>
 
 namespace fst
 {
@@ -90,6 +91,21 @@ namespace fst
         {
             spheres.push_back(Sphere(vertex_data[sphere.center_vertex_id - 1],
                 sphere.radius, sphere.material_id, sphere.transformations, sphere.texture_id));
+        }
+
+        for (auto& texture : parser.textures)
+        {
+            int width;
+            int height;
+            unsigned char* image;
+
+            std::vector<char> writable(texture.imageName.begin(), texture.imageName.end());
+            writable.push_back('\0');
+
+            read_jpeg_header(&*writable.begin(), width, height);
+            image = new unsigned char[width * height * 3];
+            read_jpeg(&*writable.begin(), image, width, height);
+            textures.push_back(Texture(width, height, image, texture.imageName, texture.interpolation, texture.decalMode, texture.appearance));
         }
 
         background_color = math::Vector3f(parser.background_color.x, parser.background_color.y, parser.background_color.z);

@@ -14,6 +14,8 @@
 #include "rotation.h"
 #include "texture.h"
 
+#include "jpeg.h"
+
 #include <vector>
 
 namespace fst
