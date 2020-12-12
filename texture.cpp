@@ -66,9 +66,20 @@ namespace fst
       float dx = i - p;
       float dy = j - q;
       unsigned int index = q * m_width * 3 + p * 3;
-      C.x = m_image[index] * (1-dx) * (1 - dy) + m_image[index + 3] * dx * (1-dy) + m_image[index + m_width * 3]*(1-dx)*dy + m_image[index + 3 + m_width*3]*dx*dy; 
-      C.y = m_image[index+1] * (1-dx) * (1 - dy) + m_image[index + 3 + 1] * dx * (1-dy) + m_image[index + m_width * 3 + 1] * (1-dx) * dy + m_image[index + 3 + m_width * 3 + 1] * dx * dy; 
-      C.z = m_image[index+2] * (1-dx) * (1 - dy) + m_image[index + 3 + 2] * dx * (1-dy) + m_image[index + m_width * 3 + 2] * (1-dx) * dy + m_image[index + 3 + m_width * 3 + 2] * dx * dy; 
+      C.x = m_image[index] * (1-dx) * (1 - dy); 
+      C.x = C.x + m_image[index + 3] * dx * (1-dy);
+      C.x = C.x + m_image[index + m_width * 3] * (1-dx) * dy; 
+      C.x = C.x + m_image[index + 3 + m_width * 3] * dx * dy; 
+
+      C.y = m_image[index+1] * (1-dx) * (1 - dy); 
+      C.y = C.y + m_image[index + 3 + 1] * dx * (1-dy); 
+      C.y = C.y + m_image[index + m_width * 3 + 1] * (1-dx) * dy; 
+      C.y = C.y + m_image[index + 3 + m_width * 3 + 1] * dx * dy; 
+      
+      C.z = m_image[index+2] * (1-dx) * (1 - dy); 
+      C.z = C.z + m_image[index + 3 + 2] * dx * (1-dy); 
+      C.z = C.z + m_image[index + m_width * 3 + 2] * (1-dx) * dy; 
+      C.z = C.z + m_image[index + 3 + m_width * 3 + 2] * dx * dy; 
     }
 
     if (m_decalMode == "replace_kd" || m_decalMode == "blend_kd") {
