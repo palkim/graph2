@@ -1,4 +1,6 @@
 #pragma once
+
+#include "vector3f.h"
 #include <string>
 
 namespace fst
@@ -14,6 +16,9 @@ namespace fst
                 std::string interpolation,
                 std::string decalMode,
                 std::string appearance);
+
+        std::string getDecalMode();
+        math::Vector3f getColor(float u, float v);
 
     private:
         int m_width;

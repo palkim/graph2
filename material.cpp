@@ -18,4 +18,12 @@ namespace fst
 
         return m_specular * specular + m_diffuse * diffuse;
     }
+    float Material::computeDiffuse_without_kd(const math::Vector3f& wi, const math::Vector3f& wo, const math::Vector3f& normal) const {
+        auto diffuse = math::max(math::dot(normal, wi), 0.0f);
+        return diffuse;
+    }
+    math::Vector3f Material::computeSpecular(const math::Vector3f& wi, const math::Vector3f& wo, const math::Vector3f& normal) const{
+        auto specular = std::pow(math::max(math::dot(math::normalize(wo + wi), normal), 0.0f), m_phong_exponent);
+        return m_specular * specular;
+    }
 }

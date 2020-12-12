@@ -79,4 +79,32 @@ namespace fst
         auto distance = math::dot(m_edge2, qvec) * inv_det;
         return distance > 0.0f && distance < max_distance;
     }
+
+    std::vector<math::Vector3f> Triangle::getVertices(){
+        std::vector<math::Vector3f> vertices;
+        vertices.push_back(m_v0);
+        vertices.push_back(m_v0 + m_edge1);
+        vertices.push_back(m_v0 + m_edge2);
+        return vertices;
+    }
+
+    math::Vector3f Triangle::getNormal(){
+        return m_normal;
+    }
+
+    void Triangle::setVertices(math::Vector3f v0,math::Vector3f v1, math::Vector3f v2){
+        m_v0 = v0;
+        m_edge1 = v1-v0;
+        m_edge2 = v2-v0;
+    }
+
+    void Triangle::setVertices(std::vector<math::Vector3f> vertices){
+        m_v0 = vertices[0];
+        m_edge1 = vertices[1] - vertices[0];
+        m_edge2 = vertices[2] - vertices[0];
+    }
+
+    void Triangle::setNormal(math::Vector3f n){
+        m_normal = n;
+    }
 }

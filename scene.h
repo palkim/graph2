@@ -13,7 +13,7 @@
 #include "scaling.h"
 #include "rotation.h"
 #include "texture.h"
-
+#include "matrix.h"
 #include "jpeg.h"
 
 #include <vector>
@@ -43,5 +43,12 @@ namespace fst
         void loadFromParser(const parser::Scene &parser);
         bool intersect(const Ray &ray, HitRecord &hit_record, float max_distance) const;
         bool intersectShadowRay(const Ray &ray, float max_distance) const;
+
+        //We will store all the transformations as Matrices
+        std::vector<Matrix> tMatrices;
+        std::vector<Matrix> sMatrices;
+        std::vector<Matrix> rMatrices;
+    
+    
     };
 } // namespace fst

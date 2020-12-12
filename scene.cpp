@@ -39,18 +39,24 @@ namespace fst
         {
             translations.push_back(
                 Translation(translation.x, translation.y, translation.z));
+            tMatrices.push_back(
+                Matrix(Translation(translation.x, translation.y, translation.z)));
         }
 
         for (auto &scaling : parser.scalings)
         {
             scalings.push_back(
                 Scaling(scaling.x, scaling.y, scaling.z));
+            sMatrices.push_back(Matrix(Scaling(scaling.x, scaling.y, scaling.z)));
+
         }
 
         for (auto &rotation : parser.rotations)
         {
             rotations.push_back(
                 Rotation(rotation.angle, rotation.x, rotation.y, rotation.z));
+            rMatrices.push_back(Matrix(Rotation(rotation.angle, rotation.x, rotation.y, rotation.z)));
+            
         }
 
         for (auto& vertex : parser.vertex_data)
@@ -104,6 +110,7 @@ namespace fst
                 }
                 
             }
+            
             meshes.push_back(Mesh(std::move(triangles), mesh.material_id, mesh.transformations, mesh.texture_id));
         }
 
@@ -144,6 +151,79 @@ namespace fst
         ambient_light = math::Vector3f(parser.ambient_light.x, parser.ambient_light.y, parser.ambient_light.z);
         shadow_ray_epsilon = parser.shadow_ray_epsilon;
         max_recursion_depth = parser.max_recursion_depth;
+
+        // Now, for each object I should calculate its transformation matrix and transform all its vertices and normal vectors.
+        // I think we don't deal with triangle structures at all. The code only loops for meshes, interprets triangles as meshes too.
+        // So let me start by doing all the transformations for meshes.
+        // I think, rotations should be applied without translation ? If not, I don't know according to what 
+        // should we translate, CM of the object ? If so how the hell can I calculate it for sth like a horse?
+        for (auto & mesh : meshes){
+            Matrix allTrans;
+            std::string trans = mesh.m_transformations;
+            int transSize = trans.size();
+            for (int i=0; i<transSize; i++){
+                if (trans[i] == 't'){
+                    fst::Translation t = translations[fst::math::string2Index(trans,i)];
+                    Matrix tmp(t);
+                    allTrans = tmp*allTrans;
+                }
+                else if (trans[i] == 'r'){
+                    fst::Rotation r = rotations[fst::math::string2Index(trans,i)];
+                    Matrix tmp(r);
+                    allTrans = tmp*allTrans;
+                }
+                else if (trans[i] == 's'){
+                    fst::Scaling s = scalings[fst::math::string2Index(trans,i)];
+                    Matrix tmp(s);
+                    allTrans = tmp*allTrans;
+                }
+            }
+            Matrix normalTrans = transpose(invertt(allTrans));
+            for(auto & tr: mesh.m_triangles){
+                // Apply allTrans to all vertices and normalTrans to all normals.
+                std::vector<math::Vector3f> vertices = tr.getVertices();
+                for (int i=0; i<3; i++){
+                    vertices[i] = allTrans * vertices[i];
+                }
+                tr.setVertices(vertices);
+                tr.setNormal(normalTrans*tr.getNormal());
+            }
+        }
+
+        for (auto & sphere : spheres){
+            // I think we should apply each transformation to the sphere as it occurs.
+            Matrix allTrans;
+            std::string trans = sphere.m_transformations;
+            int transSize = trans.size();
+            std::cout << trans << std::endl;
+            for (int i=0; i<transSize; i++){
+                if (trans[i] == 't'){
+                    // translate only the center
+                    fst::Translation t = translations[fst::math::string2Index(trans,i)];
+                    sphere.m_center = Matrix(t)*sphere.m_center;
+                }
+                else if (trans[i] == 'r'){
+                    // we should rotate only the uvw coordinate system i guess, but forget it for now
+                    fst::Rotation r = rotations[fst::math::string2Index(trans,i)];
+                    fst::Matrix rM = Matrix(r);
+                    //std::cout << "r\n" << rM << std::endl;
+                    //std::cout << sphere.m_u << sphere.m_v << sphere.m_w << "\n";
+                    //std::cout << "\nalign\n" << sphere.m_align << "\n";
+                    sphere.m_u = normalize(rM*sphere.m_u);
+                    sphere.m_v = normalize(rM*sphere.m_v);
+                    sphere.m_w = normalize(rM*sphere.m_w);
+                    //std::cout << sphere.m_u << sphere.m_v << sphere.m_w << "\n";
+                    sphere.m_align = Matrix(sphere.m_u, sphere.m_v, sphere.m_w);
+                    //std::cout << "AAalign\n" << sphere.m_align << "\n";
+                }
+                else if (trans[i] == 's'){
+                    fst::Scaling s = scalings[fst::math::string2Index(trans,i)];
+                    // We should just multiply the radius by this scaling value ?
+                    // ASK ABOUT THE FORM OF THE SCALING, 
+                    sphere.m_radius = sphere.m_radius*(s.x);
+                }
+            }
+        }
     }
 
     bool Scene::intersect(const Ray& ray, HitRecord& hit_record, float max_distance) const

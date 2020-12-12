@@ -2,6 +2,9 @@
 #include "image.h"
 #include "ctpl_stl.h"
 
+#include <iostream>
+#include <string>
+
 namespace fst
 {
     Integrator::Integrator(const parser::Scene& parser)
@@ -25,8 +28,11 @@ namespace fst
         }
 
         auto& material = m_scene.materials[hit_record.material_id - 1];
+        //ambient shading
         auto color = material.get_ambient() * m_scene.ambient_light;
         auto intersection_point = ray.getPoint(hit_record.distance);
+        auto texture_id = hit_record.texture_id;
+        
 
         for (auto& light : m_scene.point_lights)
         {
@@ -38,7 +44,29 @@ namespace fst
 
             if (!m_scene.intersectShadowRay(shadow_ray, light_pos_distance))
             {
-                color = color + light.computeRadiance(light_pos_distance) * material.computeBrdf(to_light, -ray.get_direction(), hit_record.normal);
+                //compute diffuse and specular shading
+                
+                if (texture_id == -1) {
+                    color = color + light.computeRadiance(light_pos_distance) * material.computeBrdf(to_light, -ray.get_direction(), hit_record.normal);
+                } else {
+                    
+                    auto material_texture = m_scene.textures[texture_id - 1];
+                    std::string texture_decal_mode = material_texture.getDecalMode();
+                    
+                    math::Vector3f C = material_texture.getColor(hit_record.u, hit_record.v);
+                    
+                    if (texture_decal_mode == "replace_kd") {
+                        color = color + light.computeRadiance(light_pos_distance) * (C * material.computeDiffuse_without_kd(to_light, -ray.get_direction(), hit_record.normal)); 
+                    } else if (texture_decal_mode == "blend_kd") {
+                        math::Vector3f kd = material.get_diffuse();
+                        math::Vector3f res = (kd + C) / 2;
+                        color = color + light.computeRadiance(light_pos_distance) * (res * material.computeDiffuse_without_kd(to_light, -ray.get_direction(), hit_record.normal));
+                    } else if (texture_decal_mode == "replace_all") {
+                        color = color + C;
+                    }
+                    color = color + light.computeRadiance(light_pos_distance) * material.computeSpecular(to_light, -ray.get_direction(), hit_record.normal);
+
+                }
             }
         }
 
