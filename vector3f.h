@@ -2,6 +2,7 @@
 
 #include "utility.h"
 #include <cmath>
+#include <cstdio>
 
 namespace fst
 {
@@ -113,5 +114,7 @@ namespace fst
         {
             return vec - normal * dot(normal, vec) * 2.0f;
         }
+
+        
     }
 }

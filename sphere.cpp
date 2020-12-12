@@ -31,6 +31,10 @@ namespace fst
             hit_record.distance = distance;
             hit_record.normal = math::normalize(ray.getPoint(hit_record.distance) - m_center);
             hit_record.material_id = m_material_id;
+            hit_record.texture_id = m_texture_id;
+            //  calculate u,v for sphere intersection point, put it to hit_record
+            hit_record.u = (-1 * atan2(hit_record.normal.z, hit_record.normal.x) + M_PI) / M_PI / 2;
+            hit_record.v = acos(hit_record.normal.y) / M_PI;
 
             return true;
         }

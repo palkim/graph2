@@ -3,7 +3,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cstring>
-
+#include <iostream>
 
 void parser::Scene::loadFromXml(const std::string& filepath)
 {
@@ -255,6 +255,9 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         if (child) {
             stream << child->GetText() << std::endl;
             stream >> mesh.texture_id;
+        } else {
+            stream << "-1" << std::endl;
+            stream >> mesh.texture_id;
         }
 
         child = element->FirstChildElement("Transformations");
@@ -297,6 +300,9 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         if (child) {
             stream << child->GetText() << std::endl;
             stream >> triangle.texture_id;
+        } else {
+            stream << "-1" << std::endl;
+            stream >> triangle.texture_id;
         }
 
         child = element->FirstChildElement("Transformations");
@@ -330,6 +336,9 @@ void parser::Scene::loadFromXml(const std::string& filepath)
 
         if (child) {
             stream << child->GetText() << std::endl;
+            stream >> sphere.texture_id;
+        } else {
+            stream << "-1" << std::endl;
             stream >> sphere.texture_id;
         }
 

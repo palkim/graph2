@@ -4,16 +4,22 @@
 
 namespace fst
 {
-    Triangle::Triangle(const math::Vector3f& v0, const math::Vector3f& edge1, const math::Vector3f& edge2)
+    Triangle::Triangle(const math::Vector3f& v0, const math::Vector3f& edge1, const math::Vector3f& edge2, const math::Vector2f& ua, const math::Vector2f& ub, const math::Vector2f& uc)
         : m_v0(v0)
         , m_edge1(edge1)
         , m_edge2(edge2)
-        , m_normal(math::normalize(math::cross(edge1, edge2)))
+        , m_normal( math::normalize( math::cross(edge1, edge2) ) )
+        , m_ua(ua)
+        , m_ub(ub)
+        , m_uc(uc)
     {}
 
     bool Triangle::intersect(const Ray& ray, HitRecord& hit_record, float max_distance) const
     {
-        //Möller-Trumbore algorithm
+        //w2 -> v -> beta
+        //w1 -> u -> gamma
+        //w = 1 - u - v -> alpha
+        //Mï¿½ller-Trumbore algorithm
         auto pvec = math::cross(ray.get_direction(), m_edge2);
         auto inv_det = 1.0f / math::dot(m_edge1, pvec);
 
@@ -39,6 +45,9 @@ namespace fst
             //Fill the intersection record.
             hit_record.normal = m_normal;
             hit_record.distance = distance;
+            //  calculate u,v for triangle intersection point, put it to hit_record
+            hit_record.u = m_ua.x + w2 * (m_ub.x - m_ua.x) + w1 * (m_uc.x - m_ua.x);
+            hit_record.v = m_ua.y + w2 * (m_ub.y - m_ua.y) + w1 * (m_uc.y - m_ua.y);
 
             return true;
         }
@@ -47,7 +56,7 @@ namespace fst
 
     bool Triangle::intersectShadowRay(const Ray& ray, float max_distance) const
     {
-        //Möller-Trumbore algorithm
+        //Mï¿½ller-Trumbore algorithm
         auto pvec = math::cross(ray.get_direction(), m_edge2);
         auto inv_det = 1.0f / math::dot(m_edge1, pvec);
 

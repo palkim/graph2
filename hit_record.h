@@ -9,5 +9,8 @@ namespace fst
         math::Vector3f normal;
         float distance;
         int material_id;
+        int texture_id;
+        float u;
+        float v;
     };
 }

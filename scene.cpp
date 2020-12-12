@@ -5,6 +5,7 @@ namespace fst
 {
     void Scene::loadFromParser(const parser::Scene& parser)
     {
+
         for (auto& camera : parser.cameras)
         {
             cameras.push_back(Camera(
@@ -62,37 +63,6 @@ namespace fst
             tex_coord_data.push_back(math::Vector2f(tex_coord.x, tex_coord.y));
         }
 
-        for (auto& mesh : parser.meshes)
-        {
-            std::vector<Triangle> triangles;
-            for (auto& face : mesh.faces)
-            {
-                triangles.push_back(Triangle(
-                    vertex_data[face.v0_id - 1],
-                    vertex_data[face.v1_id - 1] - vertex_data[face.v0_id - 1],
-                    vertex_data[face.v2_id - 1] - vertex_data[face.v0_id - 1]));
-            }
-            meshes.push_back(Mesh(std::move(triangles), mesh.material_id, mesh.transformations, mesh.texture_id));
-        }
-
-        for (auto& triangle : parser.triangles)
-        {
-            std::vector<Triangle> triangles;
-
-            triangles.push_back(Triangle(
-                vertex_data[triangle.indices.v0_id - 1],
-                vertex_data[triangle.indices.v1_id - 1] - vertex_data[triangle.indices.v0_id - 1],
-                vertex_data[triangle.indices.v2_id - 1] - vertex_data[triangle.indices.v0_id - 1]));
-
-            meshes.push_back(Mesh(std::move(triangles), triangle.material_id, triangle.transformations, triangle.texture_id));
-        }
-
-        for (auto& sphere : parser.spheres)
-        {
-            spheres.push_back(Sphere(vertex_data[sphere.center_vertex_id - 1],
-                sphere.radius, sphere.material_id, sphere.transformations, sphere.texture_id));
-        }
-
         for (auto& texture : parser.textures)
         {
             int width;
@@ -106,6 +76,68 @@ namespace fst
             image = new unsigned char[width * height * 3];
             read_jpeg(&*writable.begin(), image, width, height);
             textures.push_back(Texture(width, height, image, texture.imageName, texture.interpolation, texture.decalMode, texture.appearance));
+        }
+
+        for (auto& mesh : parser.meshes)
+        {
+            std::vector<Triangle> triangles;
+            for (auto& face : mesh.faces)
+            {
+                if (tex_coord_data.size() > 0) {
+                    triangles.push_back(Triangle(
+                            vertex_data[face.v0_id - 1],
+                            vertex_data[face.v1_id - 1] - vertex_data[face.v0_id - 1],
+                            vertex_data[face.v2_id - 1] - vertex_data[face.v0_id - 1],
+                            tex_coord_data[face.v0_id - 1],
+                            tex_coord_data[face.v1_id - 1],
+                            tex_coord_data[face.v2_id - 1])
+                        );
+                } else {
+                    triangles.push_back(Triangle(
+                            vertex_data[face.v0_id - 1],
+                            vertex_data[face.v1_id - 1] - vertex_data[face.v0_id - 1],
+                            vertex_data[face.v2_id - 1] - vertex_data[face.v0_id - 1],
+                            math::Vector2f(-1),
+                            math::Vector2f(-1),
+                            math::Vector2f(-1))
+                        );
+                }
+                
+            }
+            meshes.push_back(Mesh(std::move(triangles), mesh.material_id, mesh.transformations, mesh.texture_id));
+        }
+
+        for (auto& triangle : parser.triangles)
+        {
+            std::vector<Triangle> triangles;
+
+            if (tex_coord_data.size() > 0) {
+                triangles.push_back(Triangle(
+                    vertex_data[triangle.indices.v0_id - 1],
+                    vertex_data[triangle.indices.v1_id - 1] - vertex_data[triangle.indices.v0_id - 1],
+                    vertex_data[triangle.indices.v2_id - 1] - vertex_data[triangle.indices.v0_id - 1],
+                    tex_coord_data[triangle.indices.v0_id - 1],
+                    tex_coord_data[triangle.indices.v1_id - 1],
+                    tex_coord_data[triangle.indices.v2_id - 1])
+                    );
+            } else {
+                triangles.push_back(Triangle(
+                    vertex_data[triangle.indices.v0_id - 1],
+                    vertex_data[triangle.indices.v1_id - 1] - vertex_data[triangle.indices.v0_id - 1],
+                    vertex_data[triangle.indices.v2_id - 1] - vertex_data[triangle.indices.v0_id - 1],
+                    math::Vector2f(-1),
+                    math::Vector2f(-1),
+                    math::Vector2f(-1))
+                    );
+            }
+
+            meshes.push_back(Mesh(std::move(triangles), triangle.material_id, triangle.transformations, triangle.texture_id));
+        }
+
+        for (auto& sphere : parser.spheres)
+        {
+            spheres.push_back(Sphere(vertex_data[sphere.center_vertex_id - 1],
+                sphere.radius, sphere.material_id, sphere.transformations, sphere.texture_id));
         }
 
         background_color = math::Vector3f(parser.background_color.x, parser.background_color.y, parser.background_color.z);
