@@ -76,10 +76,10 @@ namespace fst
         math::Vector3f pnew = p - m_center;
         pnew = m_align*pnew;
         std::vector<float> result;
-        float phi = acos(pnew.y / m_radius);
-        float theta = atan2(pnew.z, pnew.x);
-        float u = (-theta + M_PI) / (2*M_PI);
-        float v = phi / M_PI;
+        float theta = acos(pnew.y / m_radius);
+        float phi = atan2(pnew.z, pnew.x);
+        float u = (-phi + M_PI) / (2*M_PI);
+        float v = theta / M_PI;
         result.push_back(u);
         result.push_back(v);
         

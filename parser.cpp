@@ -337,7 +337,8 @@ void parser::Scene::loadFromXml(const std::string& filepath)
         if (child) {
             stream << child->GetText() << std::endl;
             stream >> sphere.texture_id;
-        } else {
+        } 
+        else {
             stream << "-1" << std::endl;
             stream >> sphere.texture_id;
         }

@@ -214,6 +214,7 @@ namespace fst
                     sphere.m_w = normalize(rM*sphere.m_w);
                     //std::cout << sphere.m_u << sphere.m_v << sphere.m_w << "\n";
                     sphere.m_align = Matrix(sphere.m_u, sphere.m_v, sphere.m_w);
+                    sphere.m_center = Matrix(r)*sphere.m_center;
                     //std::cout << "AAalign\n" << sphere.m_align << "\n";
                 }
                 else if (trans[i] == 's'){
@@ -221,6 +222,7 @@ namespace fst
                     // We should just multiply the radius by this scaling value ?
                     // ASK ABOUT THE FORM OF THE SCALING, 
                     sphere.m_radius = sphere.m_radius*(s.x);
+                    sphere.m_center = Matrix(s)*sphere.m_center;
                 }
             }
         }

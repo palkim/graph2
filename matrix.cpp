@@ -6,7 +6,7 @@ namespace fst
     Matrix::Matrix(){
         for(int i=0; i<4; i++){
             for(int j=0; j<4; j++){
-                mtrx[i][j] = (i==j) ? 1.0f : 0.0f;
+                mtrx[i][j] = (i==j) ? 1.0 : 0.0;
             }
         }
     }
@@ -49,8 +49,8 @@ namespace fst
         rInv.mtrx[1][0] = u.y; rInv.mtrx[1][1] = v.y; rInv.mtrx[1][2] = w.y; 
         rInv.mtrx[2][0] = u.z; rInv.mtrx[2][1] = v.z; rInv.mtrx[2][2] = w.z;
         Matrix rx;
-        double cs = cos(rotation.angle * 3.14159265359 / 180.0);
-        double sn = sin(rotation.angle * 3.14159265359 / 180.0);
+        double cs = cos(rotation.angle * M_PI / 180.0);
+        double sn = sin(rotation.angle * M_PI / 180.0);
         rx.mtrx[1][1] = cs;  rx.mtrx[1][2] = -sn;
         rx.mtrx[2][1] = sn;  rx.mtrx[2][2] = cs; 
 
