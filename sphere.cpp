@@ -20,6 +20,7 @@ namespace fst
     bool Sphere::intersect(const Ray& ray, HitRecord& hit_record, float max_distance) const
     {
         //geometrical approach
+        /*
         auto e = m_center - ray.get_origin();
         auto a = math::dot(e, ray.get_direction());
         auto x = m_radius * m_radius + a * a - math::dot(e, e);
@@ -31,6 +32,33 @@ namespace fst
 
 
         auto distance = a - sqrtf(x);
+
+        */
+        auto oc = ray.get_origin() - m_center;
+        float a = math::dot(ray.get_direction(), ray.get_direction());
+        float b = 2.0 * math::dot(oc, ray.get_direction());
+        float c = math::dot(oc,oc) - m_radius*m_radius;
+        float disc = b*b - 4*a*c;
+        float distance = 0;
+        if (disc < 0){
+            return false;
+        }
+        else if (disc > 0){
+            float t0 = (-b - sqrt(disc)) / (2.0*a);
+            float t1 = (-b + sqrt(disc)) / (2.0*a);
+            if (t0>0 && t1>0){
+                distance = std::min(t0, t1);
+            }
+            else if (t0<0 && t1 >0){
+                distance = t1;
+            }
+            else if (t0>0 && t1<0){
+                distance = t0;
+            }
+        }
+        else{
+            distance = (-b) / (2.0*a);
+        }
 
         if (distance > 0.0f && distance < max_distance)
         {
