@@ -32,8 +32,6 @@ namespace fst
 
         auto distance = a - sqrtf(x);
 
-        
-        
         if (distance > 0.0f && distance < max_distance)
         {
             //Fill the intersection record.

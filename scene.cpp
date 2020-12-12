@@ -165,20 +165,20 @@ namespace fst
             for (int i=0; i<transSize; i++){
                 if (trans[i] == 't'){
                     fst::Translation t = translations[fst::math::string2Index(trans,i)];
-                    Matrix tmp(t);
-                    allTrans = tmp*allTrans;
+                    allTrans = Matrix(t)*allTrans;
                 }
                 else if (trans[i] == 'r'){
                     fst::Rotation r = rotations[fst::math::string2Index(trans,i)];
                     fst::Rotation rn = rotations[fst::math::string2Index(trans,i)];
                     rn.angle = -r.angle;
                     allTrans = Matrix(r)*allTrans;
-                    normalTrans = Matrix(rn)*normalTrans;
+                    normalTrans = transpose(Matrix(rn))*normalTrans;
+
                 }
                 else if (trans[i] == 's'){
                     fst::Scaling s = scalings[fst::math::string2Index(trans,i)];
                     allTrans = Matrix(s)*allTrans;
-                    normalTrans = Matrix(s)*normalTrans;
+                    normalTrans = transpose(Matrix(s))*normalTrans;
                 }
             }
             //Matrix normalTrans = transpose(invertt(allTrans));
