@@ -106,5 +106,6 @@ namespace fst
 
     void Triangle::setNormal(math::Vector3f n){
         m_normal = n;
+        m_normal = math::normalize(m_normal);
     }
 }

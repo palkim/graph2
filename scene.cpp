@@ -159,6 +159,7 @@ namespace fst
         // should we translate, CM of the object ? If so how the hell can I calculate it for sth like a horse?
         for (auto & mesh : meshes){
             Matrix allTrans;
+            Matrix normalTrans;
             std::string trans = mesh.m_transformations;
             int transSize = trans.size();
             for (int i=0; i<transSize; i++){
@@ -169,16 +170,18 @@ namespace fst
                 }
                 else if (trans[i] == 'r'){
                     fst::Rotation r = rotations[fst::math::string2Index(trans,i)];
-                    Matrix tmp(r);
-                    allTrans = tmp*allTrans;
+                    fst::Rotation rn = rotations[fst::math::string2Index(trans,i)];
+                    rn.angle = -r.angle;
+                    allTrans = Matrix(r)*allTrans;
+                    normalTrans = Matrix(rn)*normalTrans;
                 }
                 else if (trans[i] == 's'){
                     fst::Scaling s = scalings[fst::math::string2Index(trans,i)];
-                    Matrix tmp(s);
-                    allTrans = tmp*allTrans;
+                    allTrans = Matrix(s)*allTrans;
+                    normalTrans = Matrix(s)*normalTrans;
                 }
             }
-            Matrix normalTrans = transpose(invertt(allTrans));
+            //Matrix normalTrans = transpose(invertt(allTrans));
             for(auto & tr: mesh.m_triangles){
                 // Apply allTrans to all vertices and normalTrans to all normals.
                 std::vector<math::Vector3f> vertices = tr.getVertices();
@@ -195,7 +198,7 @@ namespace fst
             Matrix allTrans;
             std::string trans = sphere.m_transformations;
             int transSize = trans.size();
-            std::cout << trans << std::endl;
+            //std::cout << trans << std::endl;
             for (int i=0; i<transSize; i++){
                 if (trans[i] == 't'){
                     // translate only the center
